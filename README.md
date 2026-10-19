@@ -40,12 +40,13 @@ Luego visita `http://localhost:3000`.
 
 ## Power-ups
 
-Suelta el 12 % de los asteroides destruidos (50 % de probabilidad de cada tipo):
+Suelta el 12 % de los asteroides destruidos (33 % de probabilidad de cada tipo):
 
-| Power-up     | Efecto                                        |
-| ------------ | --------------------------------------------- |
-| Rayo azul    | Propulsión doble durante 5 segundos           |
-| Escudo cian  | Inmunidad a los asteroides durante 5 segundos |
+| Power-up     | Efecto                                                       |
+| ------------ | ------------------------------------------------------------ |
+| Rayo azul    | Propulsión doble durante 5 segundos                          |
+| Barras naranjas | Dispara 3 balas paralelas durante 5 segundos              |
+| Escudo cian  | Inmunidad a los asteroides durante 5 segundos                |
 
 ## Características
 
@@ -53,3 +54,4 @@ Suelta el 12 % de los asteroides destruidos (50 % de probabilidad de cada tipo):
 - Asteroides se parten en fragmentos más pequeños al ser destruidos
 - Partículas de explosión al destruir asteroides
 - Power-up de escudo: burbuja cian que rebota los asteroides y avisa al expirar con un parpadeo
+- Triple disparo: 3 balas paralelas en la dirección de apunte durante 5 s

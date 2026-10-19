@@ -29,6 +29,28 @@ const dist  = (a, b)   => Math.hypot(a.x - b.x, a.y - b.y);
 const rand  = (min, max) => min + Math.random() * (max - min);
 const randInt = (min, max) => Math.floor(rand(min, max + 1));
 
+// ── Skins ─────────────────────────────────────────────────────────────────────
+// Solo cambian la apariencia de la nave: colores del casco y de la llama.
+const SKINS = [
+  { nombre: 'Clásico',   hull: '#ffffff', thrust: 'rgba(255, 130, 0, 0.85)', lineWidth: 1.5, glow: false },
+  { nombre: 'Neón',      hull: '#00ffff', thrust: '#7cfffb',                  lineWidth: 1.5, glow: true  },
+  { nombre: 'Fuego',     hull: '#ff3c38', thrust: '#ffd966',                  lineWidth: 2,   glow: false },
+  { nombre: 'Azul',      hull: '#4d9de0', thrust: '#7fc8f8',                  lineWidth: 2,   glow: false },
+  { nombre: 'Esmeralda', hull: '#3ddc84', thrust: '#b6ffcf',                  lineWidth: 1.5, glow: true  },
+];
+let skinIndex = 0;
+
+// Último skin elegido (si el navegador lo permite)
+try {
+  const guardado = parseInt(localStorage.getItem('asteroids_skin'), 10);
+  if (!isNaN(guardado)) skinIndex = wrap(guardado, SKINS.length);
+} catch (e) { /* sin localStorage: nos quedamos con el skin por defecto */ }
+
+function cycleSkin(dir) {
+  skinIndex = wrap(skinIndex + dir, SKINS.length);
+  try { localStorage.setItem('asteroids_skin', String(skinIndex)); } catch (e) {}
+}
+
 // ── Bullet ────────────────────────────────────────────────────────────────────
 class Bullet {
   constructor(x, y, angle) {
@@ -328,10 +350,15 @@ class Ship {
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
-    // Azul mientras dure el power-up de velocidad
-    ctx.strokeStyle = this.speedBoost > 0 ? '#4d9bff' : '#fff';
-    ctx.lineWidth   = 1.5;
+    // Azul mientras dure el power-up de velocidad, si no el color del skin
+    const skin = SKINS[skinIndex];
+    ctx.strokeStyle = this.speedBoost > 0 ? '#4d9bff' : skin.hull;
+    ctx.lineWidth   = skin.lineWidth;
     ctx.lineJoin    = 'round';
+    if (skin.glow) {
+      ctx.shadowColor = skin.hull;
+      ctx.shadowBlur  = 10;
+    }
 
     // Silueta clásica: triángulo con muesca trasera
     ctx.beginPath();
@@ -348,7 +375,7 @@ class Ship {
       ctx.moveTo(-8, -4);
       ctx.lineTo(-8 - rand(6, 14), 0);
       ctx.lineTo(-8,  4);
-      ctx.strokeStyle = 'rgba(255, 130, 0, 0.85)';
+      ctx.strokeStyle = skin.thrust;
       ctx.stroke();
     }
 
@@ -465,6 +492,11 @@ function killShip() {
 // ── Update ────────────────────────────────────────────────────────────────────
 function update(dt) {
   if (state === 'gameover') {
+    // Selector de skin: se consume cada tecla exactamente una vez por frame
+    const izq = pressed('ArrowLeft');  const aIzq = pressed('KeyA');
+    const der = pressed('ArrowRight'); const aDer = pressed('KeyD');
+    if (izq || aIzq) cycleSkin(-1);
+    if (der || aDer) cycleSkin(1);
     if (pressed('Space')) initGame();
     particles.forEach(p => p.update(dt));
     particles = particles.filter(p => !p.dead);
@@ -560,7 +592,7 @@ function drawLifeIcon(x, y) {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(-Math.PI / 2);
-  ctx.strokeStyle = '#fff';
+  ctx.strokeStyle = SKINS[skinIndex].hull;
   ctx.lineWidth   = 1.2;
   ctx.lineJoin    = 'round';
   ctx.beginPath();
@@ -617,8 +649,14 @@ function draw() {
 
   drawHUD();
 
-  if (state === 'gameover')
+  if (state === 'gameover') {
     drawOverlay('GAME OVER', `PUNTAJE: ${score}   —   ESPACIO PARA REINICIAR`);
+    // Selector de skin, coloreado con el skin activo
+    ctx.textAlign = 'center';
+    ctx.font      = '16px monospace';
+    ctx.fillStyle = SKINS[skinIndex].hull;
+    ctx.fillText(`SKIN: ${SKINS[skinIndex].nombre}  ← / →`, W / 2, H / 2 + 54);
+  }
 }
 
 // ── Loop principal ────────────────────────────────────────────────────────────

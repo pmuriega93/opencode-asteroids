@@ -38,8 +38,18 @@ Luego visita `http://localhost:3000`.
 | Mediano   | 50     |
 | Pequeño   | 100    |
 
+## Power-ups
+
+Suelta el 12 % de los asteroides destruidos (50 % de probabilidad de cada tipo):
+
+| Power-up     | Efecto                                        |
+| ------------ | --------------------------------------------- |
+| Rayo azul    | Propulsión doble durante 5 segundos           |
+| Escudo cian  | Inmunidad a los asteroides durante 5 segundos |
+
 ## Características
 
 - 3 vidas con invencibilidad temporal al reaparecer (parpadeo)
 - Asteroides se parten en fragmentos más pequeños al ser destruidos
 - Partículas de explosión al destruir asteroides
+- Power-up de escudo: burbuja cian que rebota los asteroides y avisa al expirar con un parpadeo

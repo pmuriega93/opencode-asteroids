@@ -29,6 +29,7 @@ Luego visita `http://localhost:3000`.
 | `←` `→`   | Rotar nave |
 | `↑`       | Propulsar  |
 | `Espacio` | Disparar   |
+| `←` `→` (en `GAME OVER`) | Cambiar skin de la nave |
 
 ## Puntuación
 
@@ -43,3 +44,4 @@ Luego visita `http://localhost:3000`.
 - 3 vidas con invencibilidad temporal al reaparecer (parpadeo)
 - Asteroides se parten en fragmentos más pequeños al ser destruidos
 - Partículas de explosión al destruir asteroides
+- Skins de nave seleccionables con `←` `→` en la pantalla de game over (se recuerdan entre partidas)

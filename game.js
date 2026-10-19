@@ -30,13 +30,15 @@ const rand  = (min, max) => min + Math.random() * (max - min);
 const randInt = (min, max) => Math.floor(rand(min, max + 1));
 
 // ── Skins ─────────────────────────────────────────────────────────────────────
-// Solo cambian la apariencia de la nave: colores del casco y de la llama.
+// Cambian la apariencia de la nave: colores del casco y de la llama.
+// El skin "Morado" además duplica el tamaño de la nave y los puntos obtenidos.
 const SKINS = [
-  { nombre: 'Clásico',   hull: '#ffffff', thrust: 'rgba(255, 130, 0, 0.85)', lineWidth: 1.5, glow: false },
-  { nombre: 'Neón',      hull: '#00ffff', thrust: '#7cfffb',                  lineWidth: 1.5, glow: true  },
-  { nombre: 'Fuego',     hull: '#ff3c38', thrust: '#ffd966',                  lineWidth: 2,   glow: false },
-  { nombre: 'Azul',      hull: '#4d9de0', thrust: '#7fc8f8',                  lineWidth: 2,   glow: false },
-  { nombre: 'Esmeralda', hull: '#3ddc84', thrust: '#b6ffcf',                  lineWidth: 1.5, glow: true  },
+  { nombre: 'Clásico',   hull: '#ffffff', thrust: 'rgba(255, 130, 0, 0.85)', lineWidth: 1.5, glow: false, scale: 1, scoreMult: 1 },
+  { nombre: 'Neón',      hull: '#00ffff', thrust: '#7cfffb',                  lineWidth: 1.5, glow: true,  scale: 1, scoreMult: 1 },
+  { nombre: 'Fuego',     hull: '#ff3c38', thrust: '#ffd966',                  lineWidth: 2,   glow: false, scale: 1, scoreMult: 1 },
+  { nombre: 'Azul',      hull: '#4d9de0', thrust: '#7fc8f8',                  lineWidth: 2,   glow: false, scale: 1, scoreMult: 1 },
+  { nombre: 'Esmeralda', hull: '#3ddc84', thrust: '#b6ffcf',                  lineWidth: 1.5, glow: true,  scale: 1, scoreMult: 1 },
+  { nombre: 'Morado',    hull: '#a855f7', thrust: '#d8b4fe',                  lineWidth: 2,   glow: true,  scale: 2, scoreMult: 2 },
 ];
 let skinIndex = 0;
 
@@ -272,7 +274,7 @@ class Ship {
     this.angle  = -Math.PI / 2;
     this.vx     = 0;
     this.vy     = 0;
-    this.radius = 12;
+    this.radius = 12 * SKINS[skinIndex].scale;
     this.thrusting     = false;
     this.invincible    = 3;
     this.shootCooldown = 0;
@@ -314,11 +316,12 @@ class Ship {
   tryShoot() {
     if (this.shootCooldown > 0 || this.dead) return [];
     this.shootCooldown = 0.2;
-    const NOSE = 21;
+    const s = SKINS[skinIndex].scale;
+    const NOSE = 21 * s;
     const ox = this.x + Math.cos(this.angle) * NOSE;
     const oy = this.y + Math.sin(this.angle) * NOSE;
     // Con power-up activo: 3 balas paralelas en la dirección de apunte
-    const offsets = this.tripleShot > 0 ? [-9, 0, 9] : [0];
+    const offsets = this.tripleShot > 0 ? [-9 * s, 0, 9 * s] : [0];
     const px = Math.cos(this.angle + Math.PI / 2);
     const py = Math.sin(this.angle + Math.PI / 2);
     return offsets.map(o => new Bullet(ox + px * o, oy + py * o, this.angle));
@@ -339,7 +342,7 @@ class Ship {
       ctx.shadowColor = '#4dffb3';
       ctx.shadowBlur  = 12;
       ctx.beginPath();
-      ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+      ctx.arc(this.x, this.y, 20 * SKINS[skinIndex].scale, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }
@@ -359,6 +362,8 @@ class Ship {
       ctx.shadowColor = skin.hull;
       ctx.shadowBlur  = 10;
     }
+    // Escala el tamaño según el skin (p. ej. el Morado es el doble de grande)
+    ctx.scale(skin.scale, skin.scale);
 
     // Silueta clásica: triángulo con muesca trasera
     ctx.beginPath();
@@ -538,8 +543,8 @@ function update(dt) {
       if (!a.dead && !b.dead && dist(b, a) < a.radius) {
         b.dead = true;
         a.dead = true;
-        // La estrella fugaz vale más puntos
-        score += a.esFugaz ? 150 : POINTS[a.size];
+        // La estrella fugaz vale más puntos; el skin activo puede multiplicarlos
+        score += (a.esFugaz ? 150 : POINTS[a.size]) * SKINS[skinIndex].scoreMult;
         explode(a.x, a.y, a.size * 5);
         newAsteroids.push(...a.split());
         // Posible power-up: 12 % en total, tercios entre tipos

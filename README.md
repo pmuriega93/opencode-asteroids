@@ -57,3 +57,4 @@ Suelta el 12 % de los asteroides destruidos (33 % de probabilidad de cada tipo):
 - Power-up de escudo: burbuja cian que rebota los asteroides y avisa al expirar con un parpadeo
 - Triple disparo: 3 balas paralelas en la dirección de apunte durante 5 s
 - Skins de nave seleccionables con `←` `→` en la pantalla de game over (se recuerdan entre partidas)
+- Skin "Morado": nave del doble de grande que otorga el doble de puntos
